@@ -51,7 +51,7 @@ function App() {
   }, 500, [search]);
 
   useEffect(() => {
-    fetch("https://api.obis.org/facet?facets=measurementTypeCombination&dropped=include&absence=include&size=10000")
+    fetch("https://api.obis.org/facet?facets=measurementTypeCombination&arrays=false&dropped=include&absence=include&size=10000")
     .then(res => res.json())
     .then(result => setMofs(processMofs(result.results.measurementTypeCombination)));
   }, []);
