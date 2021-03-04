@@ -1,7 +1,21 @@
 html {
-  font-size: 12px; 
+  font-size: 13px; 
 }
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+table th {
+  border-top: 0px !important;
+}
+
+.loading {
+  animation: blinker 0.5s cubic-bezier(1, 0, 0, 1) infinite alternate; 
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
 }

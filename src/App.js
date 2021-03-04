@@ -1,4 +1,6 @@
 import React, {useState, useEffect} from "react";
+import { useDebouncedEffect } from "./useDebouncedEffect";
+import Linkify from "react-linkify";
 
 function processMofs(mofs) {
   return mofs.map(mof => {
@@ -18,11 +20,35 @@ function processMofs(mofs) {
   });
 }
 
+const nf = new Intl.NumberFormat();
+
+const componentDecorator = (href, text, key) => (
+  <a href={href} key={key} target="_blank" rel="noopener noreferrer">
+      {text}
+  </a>
+);
+
 function App() {
 
   const [mofs, setMofs] = useState([]);
+  const [mof, setMof] = useState(null);
   const [datasets, setDatasets] = useState([]);
   const [search, setSearch] = useState("");
+  const [datasetsLoading, setDatasetsLoading] = useState(false);
+
+  useDebouncedEffect(() => {
+    if (mofs && mofs.length > 0) {
+      const newMofs = mofs.map((m) => {
+        if (!m.measurementType || !m.measurementType.toLowerCase().includes(search.toLowerCase())) {
+          m.hide = true;
+        } else {
+          m.hide = false;
+        }
+        return m;
+      });
+      setMofs(newMofs);
+    }
+  }, 500, [search]);
 
   useEffect(() => {
     fetch("https://api.obis.org/facet?facets=measurementTypeCombination&dropped=include&absence=include&size=10000")
@@ -30,22 +56,11 @@ function App() {
     .then(result => setMofs(processMofs(result.results.measurementTypeCombination)));
   }, []);
 
-  useEffect(() => {
-    const newMofs = mofs.map((mof) => {
-      if (!mof.measurementType || !mof.measurementType.toLowerCase().includes(search)) {
-        mof.hide = true;
-      } else {
-        mof.hide = false;
-      }
-      return mof;
-    });
-    console.log(newMofs)
-    setMofs(newMofs);
-  }, [search]);
-
   function viewDatasets(mof) {
     window.scrollTo(0, 0);
+    setMof(mof);
     setDatasets([]);
+    setDatasetsLoading(true);
     let url = "https://api.obis.org/dataset?dropped=include&absence=include&";
     if (mof.measurementType) {
       url = url + "measurementtype=" + mof.measurementType + "&";
@@ -55,67 +70,94 @@ function App() {
     }
     fetch(url)
     .then(res => res.json())
-    .then(result => setDatasets(result.results));
+    .then(result => {
+      setDatasets(result.results);
+      setDatasetsLoading(false);
+    });
   }
   
   return (
-    <div className="App container-fluid">
-      <header className="App-header">
-        <h1>MoF viewer</h1>
+    <div className="App">
+      <nav className="navbar navbar-light bg-light px-4 py-3">
+        <a className="text-xl navbar-brand" href="#">OBIS Measurement Types</a>
+      </nav>
 
-        <div className="pt-2 pb-2">
-          <input placeholder="search" type="text" value={search} onChange={(e) => setSearch(e.target.value)}></input>
+      <div className="container-fluid pt-3">
+        <div className="row">
+          <div className="col-xl-6 col-md-8 col-sm-12">
+            <p>This is an overview of all measurementType(ID) combinations in the OBIS database. Click the number of records in the last column to see the datasets containing a specific measurementType(ID) combination.</p>
+            <p>Issues at <a href="https://github.com/iobis/mof-viewer" target="_blank" rel="noopener noreferrer">https://github.com/iobis/mof-viewer</a>.</p>
+          </div>
         </div>
 
-        {
-          datasets && datasets.length > 0 &&
-          <div>
-            <h2>Datasets</h2>
-            <table className="table table-sm">
-              <thead>
-                <tr>
-                  <th>title</th>
-                  <th>records</th>
-                </tr>
-              </thead>
-              <tbody>
-                {
-                  datasets.map((dataset, i) => <tr key={i}>
-                    <td><a href={"https://obis.org/dataset/" + dataset.id} target="_blank">{dataset.title}</a></td>
-                    <td>{dataset.records}</td>
-                  </tr>) 
-                }
-              </tbody>
-            </table>
+        <div className="row">
+          <div className="col-md-12">
+            <h3>Datasets</h3>
+
+            { datasetsLoading && <p className="loading">Loading datasets...</p> }
+
+            { datasets && datasets.length > 0 &&
+              <div>
+                <p>Datasets for <b>{ mof.measurementType } { mof.measurementTypeID }</b></p>
+                <table className="table table-sm table-hover">
+                  <thead>
+                    <tr>
+                      <th>title</th>
+                      <th>records</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {
+                      datasets.map((dataset, i) => <tr key={i}>
+                        <td><a href={"https://obis.org/dataset/" + dataset.id} target="_blank">{dataset.title}</a></td>
+                        <td>{nf.format(dataset.records)}</td>
+                      </tr>) 
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+
+            { !datasetsLoading && datasets && datasets.length === 0 && <p>No datasets selected.</p> }
+
+            <h3>Measurement types</h3>
+
+            <div className="pt-2 pb-2">
+              <div className="form-group row">
+                <label className="col-sm-1 col-form-label" for="search">Search</label>
+                <div class="col-sm-4">
+                  <input className="form-control form-control-md" id="search" type="text" value={search} onChange={(e) => setSearch(e.target.value)}></input>
+                </div>
+              </div>
+            </div>
+
+            {
+              mofs && mofs.length > 0 ? 
+              <table className="table table-sm table-hover">
+                <thead>
+                  <tr>
+                    <th>measurementType</th>
+                    <th>measurementTypeID</th>
+                    <th>records</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    mofs.filter(mof => !mof.hide).map((mof, i) => <tr key={i}>
+                      <td>{mof.measurementType}</td>
+                      <td><Linkify componentDecorator={componentDecorator}>{mof.measurementTypeID}</Linkify></td>
+                      <td className="text-primary cursor-pointer" onClick={() => viewDatasets(mof)}>{nf.format(mof.records)}</td>
+                    </tr>) 
+                  }
+                </tbody>
+              </table>
+              : <p className="loading">Loading measurement types...</p>
+            }
+
           </div>
-        }
+        </div>
 
-        <h2>Measurement types</h2>
-
-        {
-          mofs && mofs.length > 0 ? 
-          <table Name="table table-sm">
-            <thead>
-              <tr>
-                <th>measurementType</th>
-                <th>measurementTypeID</th>
-                <th>records</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                mofs.filter(mof => !mof.hide).map((mof, i) => <tr key={i}>
-                  <td>{mof.measurementType}</td>
-                  <td>{mof.measurementTypeID}</td>
-                  <td className="text-primary cursor-pointer" onClick={() => viewDatasets(mof)}>{mof.records}</td>
-                </tr>) 
-              }
-            </tbody>
-          </table>
-          : <p>Loading...</p>
-        }
-
-      </header>
+      </div>
     </div>
   );
 }
