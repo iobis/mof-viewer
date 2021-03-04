@@ -1,1 +1,0 @@
-{"version":3,"sources":["webpack://src/index.css"],"names":[],"mappings":"AAAA,KACE,cACF,CAEA,gBACE,cACF","file":"main.6e473a36.chunk.css","sourcesContent":["html {\n  font-size: 12px; \n}\n\n.cursor-pointer {\n  cursor: pointer;\n}"]}
