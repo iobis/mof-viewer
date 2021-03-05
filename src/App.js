@@ -34,6 +34,7 @@ function App() {
   const [mof, setMof] = useState(null);
   const [datasets, setDatasets] = useState([]);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("measurementType");
   const [datasetsLoading, setDatasetsLoading] = useState(false);
 
   useDebouncedEffect(() => {
@@ -55,6 +56,19 @@ function App() {
     .then(res => res.json())
     .then(result => setMofs(processMofs(result.results.measurementTypeCombination)));
   }, []);
+
+  useEffect(() => {
+    if (sort && mofs && mofs.length > 0) {
+      const newMofs = [...mofs];
+      const ascending = sort === "records" ? -1 : 1;
+      newMofs.sort((a, b) => {
+        if (!a[sort]) return ascending;
+        if (!b[sort]) return -ascending;
+        return (a === null || a === "" || a[sort] > b[sort]) ? ascending : -ascending;
+      });
+      setMofs(newMofs);
+    }
+  }, [sort])
 
   function viewDatasets(mof) {
     window.scrollTo(0, 0);
@@ -103,6 +117,7 @@ function App() {
                   <thead>
                     <tr>
                       <th>title</th>
+                      <th>node</th>
                       <th>records</th>
                     </tr>
                   </thead>
@@ -110,6 +125,7 @@ function App() {
                     {
                       datasets.map((dataset, i) => <tr key={i}>
                         <td><a href={"https://obis.org/dataset/" + dataset.id} target="_blank">{dataset.title}</a></td>
+                        <td>{dataset.nodes.map(x => x.name).join(", ")}</td>
                         <td>{nf.format(dataset.records)}</td>
                       </tr>) 
                     }
@@ -124,8 +140,8 @@ function App() {
 
             <div className="pt-2 pb-2">
               <div className="form-group row">
-                <label className="col-sm-1 col-form-label" for="search">Search</label>
-                <div class="col-sm-4">
+                <label className="col-sm-1 col-form-label" htmlFor="search">Search</label>
+                <div className="col-sm-4">
                   <input className="form-control form-control-md" id="search" type="text" value={search} onChange={(e) => setSearch(e.target.value)}></input>
                 </div>
               </div>
@@ -136,9 +152,9 @@ function App() {
               <table className="table table-sm table-hover">
                 <thead>
                   <tr>
-                    <th>measurementType</th>
-                    <th>measurementTypeID</th>
-                    <th>records</th>
+                    <th className="cursor-pointer" onClick={() => setSort("measurementType")}>measurementType</th>
+                    <th className="cursor-pointer" onClick={() => setSort("measurementTypeID")}>measurementTypeID</th>
+                    <th className="cursor-pointer" onClick={() => setSort("records")}>records</th>
                   </tr>
                 </thead>
                 <tbody>
