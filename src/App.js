@@ -34,7 +34,7 @@ function App() {
   const [mof, setMof] = useState(null);
   const [datasets, setDatasets] = useState([]);
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState("measurementType");
+  const [sort, setSort] = useState("records");
   const [datasetsLoading, setDatasetsLoading] = useState(false);
 
   useDebouncedEffect(() => {
