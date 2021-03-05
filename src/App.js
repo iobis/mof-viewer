@@ -152,9 +152,9 @@ function App() {
               <table className="table table-sm table-hover">
                 <thead>
                   <tr>
-                    <th className="cursor-pointer" onClick={() => setSort("measurementType")}>measurementType</th>
-                    <th className="cursor-pointer" onClick={() => setSort("measurementTypeID")}>measurementTypeID</th>
-                    <th className="cursor-pointer" onClick={() => setSort("records")}>records</th>
+                    <th className="cursor-pointer text-nowrap" onClick={() => setSort("measurementType")}>measurementType { sort === "measurementType" && <span className="ml-1">&darr;</span> }</th>
+                    <th className="cursor-pointer text-nowrap" onClick={() => setSort("measurementTypeID")}>measurementTypeID { sort === "measurementTypeID" && <span className="ml-1">&darr;</span> }</th>
+                    <th className="cursor-pointer text-nowrap" onClick={() => setSort("records")}>records { sort === "records" && <span className="ml-1">&darr;</span> }</th>
                   </tr>
                 </thead>
                 <tbody>
