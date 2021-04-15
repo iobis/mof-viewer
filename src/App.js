@@ -73,15 +73,19 @@ function App() {
   function fetchLabel(i) {
     const id = mofs[i].measurementTypeID;
     if (id && id.startsWith("http://vocab.nerc.ac.uk/collection")) {
-      let url = id + "?_profile=skos&_mediatype=application/json"
+      let url = id + "?_profile=skos&_mediatype=application/json";
       url = url.replace("http://", "https://");
       fetch(url)
       .then(res => res.json())
       .then(results => {
         if (results && results.length > 0 && "http://www.w3.org/2004/02/skos/core#prefLabel" in results[0]) {
           const label = results[0]["http://www.w3.org/2004/02/skos/core#prefLabel"][0]["@value"]
-          const newMofs = [...mofs];
-          newMofs[i].prefLabel = label;
+          const newMofs = mofs.map(mof => {
+            if (mof.measurementTypeID === id) {
+              mof.prefLabel = label;
+            }
+            return mof;
+          });
           setMofs(newMofs);
         }
       });
@@ -181,7 +185,7 @@ function App() {
                     mofs.filter(mof => !mof.hide).map((mof, i) => <tr key={i}>
                       <td>{mof.measurementType}</td>
                       <td><Linkify componentDecorator={componentDecorator}>{mof.measurementTypeID}</Linkify></td>
-                      <td>{mof.prefLabel ? mof.prefLabel : mof.measurementTypeID ? <span className="text-primary cursor-pointer" onClick={() => fetchLabel(i)}>find</span> : ""}</td>
+                      <td>{mof.prefLabel ? mof.prefLabel : mof.measurementTypeID ? <span className="actionbutton cursor-pointer" onClick={() => fetchLabel(i)}>find</span> : ""}</td>
                       <td className="text-primary cursor-pointer" onClick={() => viewDatasets(mof)}>{nf.format(mof.records)}</td>
                     </tr>) 
                   }

@@ -19,3 +19,16 @@ table th {
     opacity: 0;
   }
 }
+
+.actionbutton {
+  font-size: 0.8em;
+  border: 1px solid #bbbbbb;
+  border-radius: 3px;
+  padding: 1px 3px;
+  color: #bbbbbb;
+}
+
+.actionbutton:hover {
+  border: 1px solid #333333;
+  color: #333333;
+}
