@@ -73,7 +73,8 @@ function App() {
   function fetchLabel(i) {
     const id = mofs[i].measurementTypeID;
     if (id && id.startsWith("http://vocab.nerc.ac.uk/collection")) {
-      const url = id + "?_profile=skos&_mediatype=application/json"
+      let url = id + "?_profile=skos&_mediatype=application/json"
+      url = url.replace("http://", "https://");
       fetch(url)
       .then(res => res.json())
       .then(results => {
