@@ -70,8 +70,7 @@ function App() {
     }
   }, [sort])
 
-  function fetchLabel(i) {
-    const id = mofs[i].measurementTypeID;
+  function fetchLabel(id) {
     if (id && id.startsWith("http://vocab.nerc.ac.uk/collection")) {
       let url = id + "?_profile=skos&_mediatype=application/json";
       url = url.replace("http://", "https://");
@@ -185,7 +184,7 @@ function App() {
                     mofs.filter(mof => !mof.hide).map((mof, i) => <tr key={i}>
                       <td>{mof.measurementType}</td>
                       <td><Linkify componentDecorator={componentDecorator}>{mof.measurementTypeID}</Linkify></td>
-                      <td>{mof.prefLabel ? mof.prefLabel : mof.measurementTypeID ? <span className="actionbutton cursor-pointer" onClick={() => fetchLabel(i)}>find</span> : ""}</td>
+                      <td>{mof.prefLabel ? mof.prefLabel : mof.measurementTypeID ? <span className="actionbutton cursor-pointer" onClick={() => fetchLabel(mof.measurementTypeID)}>find</span> : ""}</td>
                       <td className="text-primary cursor-pointer" onClick={() => viewDatasets(mof)}>{nf.format(mof.records)}</td>
                     </tr>) 
                   }
