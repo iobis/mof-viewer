@@ -70,6 +70,23 @@ function App() {
     }
   }, [sort])
 
+  function fetchLabel(i) {
+    const id = mofs[i].measurementTypeID;
+    if (id && id.startsWith("http://vocab.nerc.ac.uk/collection")) {
+      const url = id + "?_profile=skos&_mediatype=application/json"
+      fetch(url)
+      .then(res => res.json())
+      .then(results => {
+        if (results && results.length > 0 && "http://www.w3.org/2004/02/skos/core#prefLabel" in results[0]) {
+          const label = results[0]["http://www.w3.org/2004/02/skos/core#prefLabel"][0]["@value"]
+          const newMofs = [...mofs];
+          newMofs[i].prefLabel = label;
+          setMofs(newMofs);
+        }
+      });
+    }
+  }
+
   function viewDatasets(mof) {
     window.scrollTo(0, 0);
     setMof(mof);
@@ -154,6 +171,7 @@ function App() {
                   <tr>
                     <th className="cursor-pointer text-nowrap" onClick={() => setSort("measurementType")}>measurementType { sort === "measurementType" && <span className="ml-1">&darr;</span> }</th>
                     <th className="cursor-pointer text-nowrap" onClick={() => setSort("measurementTypeID")}>measurementTypeID { sort === "measurementTypeID" && <span className="ml-1">&darr;</span> }</th>
+                    <th className="cursor-pointer text-nowrap">prefLabel</th>
                     <th className="cursor-pointer text-nowrap" onClick={() => setSort("records")}>records { sort === "records" && <span className="ml-1">&darr;</span> }</th>
                   </tr>
                 </thead>
@@ -162,6 +180,7 @@ function App() {
                     mofs.filter(mof => !mof.hide).map((mof, i) => <tr key={i}>
                       <td>{mof.measurementType}</td>
                       <td><Linkify componentDecorator={componentDecorator}>{mof.measurementTypeID}</Linkify></td>
+                      <td>{mof.prefLabel ? mof.prefLabel : mof.measurementTypeID ? <span className="text-primary cursor-pointer" onClick={() => fetchLabel(i)}>find</span> : ""}</td>
                       <td className="text-primary cursor-pointer" onClick={() => viewDatasets(mof)}>{nf.format(mof.records)}</td>
                     </tr>) 
                   }
