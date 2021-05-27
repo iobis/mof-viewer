@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import { useDebouncedEffect } from "./useDebouncedEffect";
 import Linkify from "react-linkify";
 
@@ -36,6 +36,7 @@ function App() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("records");
   const [datasetsLoading, setDatasetsLoading] = useState(false);
+  const prevSortRef = useRef("records");
 
   useDebouncedEffect(() => {
     if (mofs && mofs.length > 0) {
@@ -58,7 +59,8 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (sort && mofs && mofs.length > 0) {
+    if (mofs && mofs.length > 0 && sort !== prevSortRef.current) {
+      prevSortRef.current = sort;
       const newMofs = [...mofs];
       const ascending = sort === "records" ? -1 : 1;
       newMofs.sort((a, b) => {
@@ -68,7 +70,7 @@ function App() {
       });
       setMofs(newMofs);
     }
-  }, [sort])
+  }, [sort, mofs])
 
   function fetchLabel(id) {
     if (id && id.startsWith("http://vocab.nerc.ac.uk/collection")) {
@@ -114,7 +116,7 @@ function App() {
   return (
     <div className="App">
       <nav className="navbar navbar-light bg-light px-4 py-3">
-        <a className="text-xl navbar-brand" href="#">OBIS Measurement Types</a>
+        <a className="text-xl navbar-brand" href="/">OBIS Measurement Types</a>
       </nav>
 
       <div className="container-fluid pt-3">
@@ -145,7 +147,7 @@ function App() {
                   <tbody>
                     {
                       datasets.map((dataset, i) => <tr key={i}>
-                        <td><a href={"https://obis.org/dataset/" + dataset.id} target="_blank">{dataset.title}</a></td>
+                        <td><a href={"https://obis.org/dataset/" + dataset.id} target="_blank" rel="noreferrer noopener">{dataset.title}</a></td>
                         <td>{dataset.nodes.map(x => x.name).join(", ")}</td>
                         <td>{nf.format(dataset.records)}</td>
                       </tr>) 
