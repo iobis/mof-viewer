@@ -78,6 +78,9 @@ function App() {
 
   function fetchLabel(id) {
     if (id && id.startsWith("http://vocab.nerc.ac.uk/collection")) {
+      if (!id.endsWith("/")) {
+        id = id + "/";
+      }
       let url = id + "?_profile=skos&_mediatype=application/json";
       url = url.replace("http://", "https://");
       fetch(url)
@@ -86,7 +89,11 @@ function App() {
         if (results && results.length > 0 && "http://www.w3.org/2004/02/skos/core#prefLabel" in results[0]) {
           const label = results[0]["http://www.w3.org/2004/02/skos/core#prefLabel"][0]["@value"]
           const newMofs = mofs.map(mof => {
-            if (mof.measurementTypeID === id) {
+            let mof_id = mof.measurementTypeID;
+            if (mof_id && !mof_id.endsWith("/")) {
+              mof_id = mof_id + "/";
+            }
+            if (mof_id === id) {
               mof.prefLabel = label;
             }
             return mof;
