@@ -66,7 +66,7 @@ function App() {
       newMofs.sort((a, b) => {
         if (!a[sort]) return ascending;
         if (!b[sort]) return -ascending;
-        if (sort == "records") {
+        if (sort === "records") {
           return (a === null || a === "" || a[sort] > b[sort]) ? ascending : -ascending;
         } else {
           return (a === null || a === "" || a[sort].toLowerCase() > b[sort].toLowerCase()) ? ascending : -ascending;
