@@ -196,7 +196,12 @@ function App() {
                   {
                     mofs.filter(mof => !mof.hide).map((mof, i) => <tr key={i}>
                       <td>{mof.measurementType}</td>
-                      <td><Linkify componentDecorator={componentDecorator}>{mof.measurementTypeID}</Linkify></td>
+                      <td>
+                        <Linkify componentDecorator={componentDecorator}>{mof.measurementTypeID}</Linkify>
+                        {mof.measurementTypeID && mof.measurementTypeID.includes("/P01/") && <span className="ml-2 btn btn-xs btn-success">P01</span>}
+                        {mof.measurementTypeID && mof.measurementTypeID.includes("/Q01/") && <span className="ml-2 btn btn-xs btn-warning">Q01</span>}
+                        {mof.measurementTypeID && mof.measurementTypeID.includes("/P02/") && <span className="ml-2 btn btn-xs btn-primary">P02</span>}
+                      </td>
                       <td>{mof.prefLabel ? mof.prefLabel : mof.measurementTypeID ? <span className="actionbutton cursor-pointer" onClick={() => fetchLabel(mof.measurementTypeID)}>find</span> : ""}</td>
                       <td className="text-primary cursor-pointer" onClick={() => viewDatasets(mof)}>{nf.format(mof.records)}</td>
                     </tr>) 

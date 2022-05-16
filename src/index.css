@@ -32,3 +32,10 @@ table th {
   border: 1px solid #333333;
   color: #333333;
 }
+
+.btn-xs {
+  padding: 0.1rem 0.3rem;
+  font-size: .8rem;
+  line-height: 1.2;
+  border-radius: 0.2rem;
+}
