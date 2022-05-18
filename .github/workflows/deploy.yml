@@ -18,6 +18,11 @@ jobs:
       run: npm install
     - name: Build page
       run: npm run build
+    - name: Create cname file
+      uses: finnp/create-file-action@master
+      env:
+        FILE_NAME: "./build/CNAME"
+        FILE_DATA: "mof.obis.org"
     - name: Deploy to gh-pages
       uses: peaceiris/actions-gh-pages@v3.6.1
       with:
