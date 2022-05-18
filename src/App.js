@@ -117,7 +117,7 @@ function App() {
       url = url + "measurementtype=" + mof.measurementType + "&";
     }
     if (mof.measurementTypeID) {
-      url = url + "measurementtypeid" + mof.measurementTypeID + "&";
+      url = url + "measurementtypeid=" + mof.measurementTypeID + "&";
     }
     fetch(url)
     .then(res => res.json())
