@@ -81,24 +81,27 @@ function App() {
       if (!id.endsWith("/")) {
         id = id + "/";
       }
-      let url = id + "?_profile=skos&_mediatype=application/json";
+      let url = id + "?_profile=skos&_mediatype=application/ld+json";
       url = url.replace("http://", "https://");
       fetch(url)
       .then(res => res.json())
       .then(results => {
-        if (results && results.length > 0 && "http://www.w3.org/2004/02/skos/core#prefLabel" in results[0]) {
-          const label = results[0]["http://www.w3.org/2004/02/skos/core#prefLabel"][0]["@value"]
-          const newMofs = mofs.map(mof => {
-            let mof_id = mof.measurementTypeID;
-            if (mof_id && !mof_id.endsWith("/")) {
-              mof_id = mof_id + "/";
-            }
-            if (mof_id === id) {
-              mof.prefLabel = label;
-            }
-            return mof;
-          });
-          setMofs(newMofs);
+        if (results && "@graph" in results) {
+          const labels = results["@graph"].map(x => x["prefLabel"]).filter(x => x);
+          if (labels.length > 0) {
+            const label = labels[0]["@value"];
+            const newMofs = mofs.map(mof => {
+              let mof_id = mof.measurementTypeID;
+              if (mof_id && !mof_id.endsWith("/")) {
+                mof_id = mof_id + "/";
+              }
+              if (mof_id === id) {
+                mof.prefLabel = label;
+              }
+              return mof;
+            });
+            setMofs(newMofs);
+          }
         }
       });
     }
