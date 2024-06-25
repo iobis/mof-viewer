@@ -137,6 +137,7 @@ function App() {
         <div className="row">
           <div className="col-xl-6 col-md-8 col-sm-12">
             <p>This is an overview of all measurementType(ID) combinations in the OBIS database. Click the number of records in the last column to see the datasets containing a specific measurementType(ID) combination.</p>
+            <p>DISCLAIMER: This tool should *NOT* be used as a resource for mapping vocabularies to measurements and parameters. It is a tool designed to assist node managers in finding any incorrect mappings within their datasets. For assistance with mapping vocabularies, see the <a href="https://manual.obis.org/vocabulary.html" target="_blank" rel="noopener noreferrer">vocabulary section</a> of the OBIS Manual.</p>
             <p>Issues at <a href="https://github.com/iobis/mof-viewer" target="_blank" rel="noopener noreferrer">https://github.com/iobis/mof-viewer</a>.</p>
           </div>
         </div>
