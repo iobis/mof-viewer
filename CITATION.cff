@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: If you use this work, please cite it as below.
+title: MoF Viewer
+type: software
+url: https://github.com/iobis/mof-viewer
+license: MIT
+authors:
+  - given-names: Pieter
+    family-names: Provoost
+    orcid: "https://orcid.org/0000-0002-4236-0384"
+  - given-names: Elizabeth
+    family-names: Lawrence
+    orcid: "https://orcid.org/0000-0002-5304-941X"
+  - given-names: Elizabeth R.
+    family-names: Lawrence
+  - name: Intergovernmental Oceanographic Commission of UNESCO
+    alias: IOC-UNESCO
+    website: "https://obis.org"
+date-released: 2024-07-17
